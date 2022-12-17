@@ -36,5 +36,6 @@ def main(url):
 
 
 if __name__ == "__main__":
-    Spider('https://www.bilibili.com/video/BV1nK411z7Nz/?spm_id_from=333.1007.tianma.1-1-1.click&vd_source=fa1028ee348b8a952050f54821408b19')
+    url = 'https://www.bilibili.com/video/BV1q14y1N7hE/?spm_id_from=333.1007.tianma.1-3-3.click&vd_source=fa1028ee348b8a952050f54821408b19'
+    Spider(url)
 
