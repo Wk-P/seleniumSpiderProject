@@ -100,7 +100,7 @@ if "__main__" == __name__:
         else:
             print("No Element!")
 
-    json_filename = "../data_files/my-favorite.jsonl"
+    json_filename = "../data_files/我的追番.jsonl"
     with open(json_filename, 'w', encoding='utf-8') as f:
         for item_info in items_info:
             json.dump(item_info, f, ensure_ascii=False)
