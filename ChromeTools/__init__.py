@@ -24,6 +24,17 @@ def find_elements_by_xpath(parent, xpath):
     return parent.find_elements(by=By.XPATH, value=xpath)
 
 
+def switch_window_to(driver, window):
+    driver.switch_to.window(window)
+
+
+def move_scroll(driver, coefficient=0.7, move_height=None):
+    if move_height is None:
+        move_height = driver.execute_script('return window.innerHeight * ' + str(coefficient) + ';')
+    js = 'window.scrollBy({top: ' + str(move_height) + '})'
+    driver.execute_script(js)
+
+
 class BLChromeDriver:
     service = None
     options = webdriver.ChromeOptions()
@@ -67,6 +78,12 @@ class BLChromeDriver:
 
     def close(self):
         self.driver.quit()
+
+    def move_scroll(self, move_height=None):
+        if move_height is None:
+            move_height = self.driver.execute_script('return window.innerHeight * 0.7;')
+        js = 'window.scrollBy({top: ' + str(move_height) + '})'
+        self.driver.execute_script(js)
 
 
 class WallHavenChromeDriver:
