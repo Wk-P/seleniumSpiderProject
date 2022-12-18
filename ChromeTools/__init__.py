@@ -35,6 +35,63 @@ def move_scroll(driver, coefficient=0.7, move_height=None):
     driver.execute_script(js)
 
 
+class ChromeDriver:
+    driver = None
+    service = None
+    options = webdriver.ChromeOptions()
+    options_args = list()
+    start_url = None
+    cookies = None
+    another_args = list()
+
+    def __init__(self, url, cookies=None, options_args=None, another_args=None):
+        self.start_url = url
+        self.service = Service(ChromeDriverManager().install())
+
+        if options_args is not None:
+            self.options_args = options_args
+            for arg in self.options_args:
+                self.options.add_argument(arg)
+
+        if another_args is not None:
+            self.another_args = another_args
+            for arg in self.another_args:
+                self.options.add_argument(arg)
+
+        self.cookies = cookies
+        self.options.add_experimental_option("detach", True)
+        self.driver = webdriver.Chrome(service=self.service, options=self.options)
+
+    def run(self):
+        self.driver.get(self.start_url)
+        if self.cookies is not None:
+            for cookie in self.cookies:
+                self.driver.add_cookie(cookie)
+        self.driver.refresh()
+
+    def find_element_by_xpath(self, xpath):
+        return self.driver.find_element(by=By.XPATH, value=xpath)
+
+    def find_elements_by_xpath(self, xpath):
+        return self.driver.find_elements(by=By.XPATH, value=xpath)
+
+    def check_element(self, pattern, value):
+        try:
+            WebDriverWait(self.driver, 20, 0.01).until(EC.presence_of_element_located((pattern, value)))
+            return True
+        except StaleElementReferenceException:
+            return False
+
+    def close(self):
+        self.driver.quit()
+
+    def move_scroll(self, move_height=None):
+        if move_height is None:
+            move_height = self.driver.execute_script('return window.innerHeight * 0.7;')
+        js = 'window.scrollBy({top: ' + str(move_height) + '})'
+        self.driver.execute_script(js)
+
+
 class BLChromeDriver:
     service = None
     options = webdriver.ChromeOptions()
@@ -52,6 +109,8 @@ class BLChromeDriver:
         self.service = Service(ChromeDriverManager().install())
         for arg in self.options_args:
             self.options.add_argument(arg)
+
+        self.options.add_experimental_option("detach", True)
         self.driver = webdriver.Chrome(service=self.service, options=self.options)
         self.start_url = url
         self.driver.get(self.start_url)
@@ -105,6 +164,7 @@ class WallHavenChromeDriver:
         for arg in self.another_args:
             self.options.add_argument(arg)
         self.service = Service(ChromeDriverManager().install())
+        self.options.add_experimental_option("detach", True)
         self.driver = webdriver.Chrome(service=self.service, options=self.options)
         self.start_url = url
         self.driver.get(self.start_url)

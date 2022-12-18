@@ -1,6 +1,7 @@
 import json
 import selenium_project.ChromeTools as Tools
 from selenium_project.ChromeTools import find_element_by_xpath as get_element_by_xpath
+import os
 
 
 def Spider(_url):
@@ -9,7 +10,7 @@ def Spider(_url):
     title = None
     if driver.check_element(Tools.By.XPATH, '/html/body/iframe'):
         title = driver.find_element_by_xpath('//*[@id="viewbox_report"]/h1').text
-    filename = '../file/' + title + '.jsonl'
+    filename = r'../data_files/' + title + '.jsonl'
     gotten_size = 0
     with open(filename, 'w', encoding='utf-8') as f:
         while max_size > 0:
@@ -46,14 +47,11 @@ def Spider(_url):
 
         if len(user_comments):
             del user_comments[0:gotten_size]
-    # driver.close()
-
-
-def main(_url):
-    Spider(_url)
+    driver.close()
+    return filename
 
 
 if __name__ == "__main__":
-    url = 'https://www.bilibili.com/video/BV1q14y1N7hE/?spm_id_from=333.1007.tianma.1-3-3.click&vd_source=fa1028ee348b8a952050f54821408b19'
-    Spider(url)
+    url = 'https://www.bilibili.com/video/BV1CG4y157Nx/?spm_id_from=333.1007.tianma.1-1-1.click&vd_source=fa1028ee348b8a952050f54821408b19'
+    filename = Spider(url)
 
