@@ -1,5 +1,6 @@
 from selenium import webdriver
-from selenium.common import StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
@@ -17,7 +18,7 @@ def jsonToString(datas):
 
 
 def find_element_by_xpath(parent, xpath):
-    return parent.find_element(by=By.XPATH, value=xpath)
+    return WebDriverWait(parent, 20, ignored_exceptions=[StaleElementReferenceException]).until(EC.presence_of_element_located((By.XPATH, xpath)))
 
 
 def find_elements_by_xpath(parent, xpath):
@@ -77,9 +78,12 @@ class ChromeDriver:
 
     def check_element(self, pattern, value):
         try:
-            WebDriverWait(self.driver, 20, 0.01).until(EC.presence_of_element_located((pattern, value)))
+            WebDriverWait(self.driver, 20, 0.01,
+                          ignored_exceptions=[NoSuchElementException, StaleElementReferenceException]).until(
+                EC.presence_of_element_located((pattern, value)))
             return True
-        except StaleElementReferenceException:
+        except NoSuchElementException:
+            print("No Element!")
             return False
 
     def close(self):
@@ -87,9 +91,20 @@ class ChromeDriver:
 
     def move_scroll(self, move_height=None):
         if move_height is None:
-            move_height = self.driver.execute_script('return window.innerHeight * 0.7;')
+            move_height = self.driver.execute_script('return window.innerHeight;')
         js = 'window.scrollBy({top: ' + str(move_height) + '})'
         self.driver.execute_script(js)
+
+    def check_element_status(self, element):
+        try:
+            WebDriverWait(self.driver, 20, 0.01).until(EC.visibility_of(element))
+        except NoSuchElementException as e:
+            return False
+        else:
+            return True
+
+    def implicitly_wait(self, sec):
+        self.driver.implicitly_wait(sec)
 
 
 class BLChromeDriver:
@@ -122,17 +137,27 @@ class BLChromeDriver:
                 self.driver.add_cookie(cookie)
         self.driver.refresh()
 
+    def find_element_by_class_name(self, class_name):
+        return self.driver.find_element(by=By.CLASS_NAME, value=class_name)
+
     def find_element_by_xpath(self, xpath):
         return self.driver.find_element(by=By.XPATH, value=xpath)
 
     def find_elements_by_xpath(self, xpath):
         return self.driver.find_elements(by=By.XPATH, value=xpath)
 
+    def find_element(self, pattern, value):
+        return self.driver.find_element(by=pattern, value=value)
+
+    def switch_to_frame(self, pattern, value):
+        self.driver.switch_to.frame(self.driver.find_element(by=pattern, value=value))
+
     def check_element(self, pattern, value):
         try:
-            WebDriverWait(self.driver, 20, 0.01).until(EC.presence_of_element_located((pattern, value)))
+            WebDriverWait(self.driver, 20, 0.01,).until(EC.presence_of_element_located((pattern, value)))
             return True
-        except StaleElementReferenceException:
+        except NoSuchElementException:
+            print("No Element!")
             return False
 
     def close(self):
@@ -140,9 +165,20 @@ class BLChromeDriver:
 
     def move_scroll(self, move_height=None):
         if move_height is None:
-            move_height = self.driver.execute_script('return window.innerHeight * 0.7;')
+            move_height = self.driver.execute_script('return window.innerHeight;')
         js = 'window.scrollBy({top: ' + str(move_height) + '})'
         self.driver.execute_script(js)
+
+    def check_element_status(self, element):
+        try:
+            WebDriverWait(self.driver, 20, 0.01).until(EC.visibility_of(element))
+        except NoSuchElementException as e:
+            return False
+        else:
+            return True
+
+    def implicitly_wait(self, sec):
+        self.driver.implicitly_wait(sec)
 
 
 class WallHavenChromeDriver:
@@ -177,10 +213,20 @@ class WallHavenChromeDriver:
 
     def check_element(self, pattern, value):
         try:
-            WebDriverWait(self.driver, 20, 0.01).until(EC.presence_of_element_located((pattern, value)))
+            WebDriverWait(self.driver, 20, 0.01, ignored_exceptions=[NoSuchElementException, StaleElementReferenceException]).until(
+                EC.presence_of_element_located((pattern, value)))
             return True
-        except StaleElementReferenceException:
+        except NoSuchElementException:
+            print("No Element!")
             return False
+
+    def check_element_status(self, element):
+        try:
+            WebDriverWait(self.driver, 20, 0.01).until(EC.visibility_of(element))
+        except NoSuchElementException as e:
+            return False
+        else:
+            return True
 
     # 退出浏览器
     def quit(self):
@@ -209,3 +255,6 @@ class WallHavenChromeDriver:
             move_height = self.driver.execute_script('return window.innerHeight * 0.7;')
         js = 'window.scrollBy({top: ' + str(move_height) + '})'
         self.driver.execute_script(js)
+
+    def implicitly_wait(self, sec):
+        self.driver.implicitly_wait(sec)

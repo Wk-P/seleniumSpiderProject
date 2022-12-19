@@ -1,5 +1,5 @@
 from selenium import webdriver
-from selenium.common import StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
@@ -54,11 +54,15 @@ class BLChromeDriver:
         return self.chrome_driver.find_elements(by=By.XPATH, value=xpath)
 
     def check_element(self, pattern, value):
+        flag = None
         try:
-            WebDriverWait(self.chrome_driver, 20, 0.01).until(EC.presence_of_element_located((pattern, value)))
-            return True
-        except StaleElementReferenceException:
-            return False
+            WebDriverWait(self.driver, 20, 0.01).until(EC.presence_of_element_located((pattern, value)))
+        except NoSuchElementException:
+            flag = False
+        else:
+            flag = True
+        finally:
+            return flag
 
     def close(self):
         self.chrome_driver.quit()

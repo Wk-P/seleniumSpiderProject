@@ -60,32 +60,6 @@ def Spider(url):
         else:
             pass
 
-    # # 父标签定位元素
-    # sub_link_xpath = '//*[@id="thumbs"]/section[1]/ul'
-    #
-    # if driver.check_element(Tools.By.XPATH, sub_link_xpath):
-    #     sub_links = driver.find_elements_by_xpath('//*[@id="thumbs"]/section[1]/ul/li')
-    #     index = 1
-    #     for item in sub_links:
-    #         link = get_element_by_xpath(item, 'figure/a').get_attribute('href')
-    #
-    #         # 切换至当前界面
-    #         driver.open_new_window_label(link)
-    #
-    #         # 定位下载连接, 下载并保存
-    #         if driver.check_element(Tools.By.XPATH, '//*[@id="wallpaper"]'):
-    #             download_url = driver.find_element_by_xpath('//*[@id="wallpaper"]').get_attribute('src')
-    #             img = requests.get(download_url).content
-    #             filename = "../img/wallimg/Lastest" + str(index) + '.png'
-    #             with open(filename, 'wb') as imgFile:
-    #                 imgFile.write(img)
-    #
-    #         print("已下载 %s 张图片" % index)
-    #         index += 1
-    #         # 关闭当前子标签，回到父标签
-    #         driver.close()
-    #         driver.switch_window_to(driver.get_window_handles()[0])
-
     print("下载完毕!")
 
 
