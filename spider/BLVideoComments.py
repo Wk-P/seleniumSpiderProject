@@ -5,7 +5,11 @@ import selenium_project.ChromeTools as Tools
 from selenium_project.ChromeTools import find_element_by_xpath as get_element_by_xpath
 
 
-def Spider(_url):
+def Spider(_url=None):
+    if _url is None or _url == '':
+        print("Invalid url!")
+        exit()
+
     driver = Tools.BLChromeDriver(_url)
     max_size = 500
 
@@ -69,6 +73,6 @@ def Spider(_url):
 
 
 if __name__ == "__main__":
-    url = 'https://www.bilibili.com/video/BV15D4y1e7u2/?spm_id_from=333.1007.tianma.2-1-4.click&vd_source=fa1028ee348b8a952050f54821408b19'
+    url = ''
     Spider(url)
 
